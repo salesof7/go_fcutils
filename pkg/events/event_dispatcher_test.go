@@ -134,3 +134,27 @@ func (s *EventDispatcherTestSuite) TestEventDispatcher_Dispatch() {
 	eh.AssertExpectations(s.T())
 	eh.AssertNotCalled(s.T(), "Handle", 1)
 }
+
+func (s *EventDispatcherTestSuite) TestEventDispatcher_Remove() {
+	err := s.eventDispatcher.Register(s.event1.GetName(), &s.handler1)
+	s.Nil(err)
+	s.Equal(1, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	err = s.eventDispatcher.Register(s.event1.GetName(), &s.handler2)
+	s.Nil(err)
+	s.Equal(2, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	err = s.eventDispatcher.Register(s.event2.GetName(), &s.handler3)
+	s.Nil(err)
+	s.Equal(1, len(s.eventDispatcher.handlers[s.event2.GetName()]))
+
+	s.eventDispatcher.Remove(s.event1.GetName(), &s.handler1)
+	s.Equal(1, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+	assert.Equal(s.T(), &s.handler2, s.eventDispatcher.handlers[s.event1.GetName()][0])
+
+	s.eventDispatcher.Remove(s.event1.GetName(), &s.handler2)
+	s.Equal(0, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	s.eventDispatcher.Remove(s.event2.GetName(), &s.handler3)
+	s.Equal(0, len(s.eventDispatcher.handlers[s.event2.GetName()]))
+}
