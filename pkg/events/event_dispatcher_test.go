@@ -82,3 +82,20 @@ func (s *EventDispatcherTestSuite) TestEventDispatcher_Register_WithSameHandler(
 	s.Equal(ErrHandlerAlreadyRegistered, err)
 	s.Equal(1, len(s.eventDispatcher.handlers[s.event1.GetName()]))
 }
+
+func (s *EventDispatcherTestSuite) TestEventDispatcher_Clear() {
+	err := s.eventDispatcher.Register(s.event1.GetName(), &s.handler1)
+	s.Nil(err)
+	s.Equal(1, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	err = s.eventDispatcher.Register(s.event1.GetName(), &s.handler2)
+	s.Nil(err)
+	s.Equal(2, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	err = s.eventDispatcher.Register(s.event2.GetName(), &s.handler3)
+	s.Nil(err)
+	s.Equal(1, len(s.eventDispatcher.handlers[s.event2.GetName()]))
+
+	s.eventDispatcher.Clear()
+	s.Equal(0, len(s.eventDispatcher.handlers))
+}
