@@ -99,3 +99,16 @@ func (s *EventDispatcherTestSuite) TestEventDispatcher_Clear() {
 	s.eventDispatcher.Clear()
 	s.Equal(0, len(s.eventDispatcher.handlers))
 }
+
+func (s *EventDispatcherTestSuite) TestEventDispatcher_Has() {
+	err := s.eventDispatcher.Register(s.event1.GetName(), &s.handler1)
+	s.Nil(err)
+	s.Equal(1, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	err = s.eventDispatcher.Register(s.event1.GetName(), &s.handler2)
+	s.Nil(err)
+	s.Equal(2, len(s.eventDispatcher.handlers[s.event1.GetName()]))
+
+	assert.True(s.T(), s.eventDispatcher.Has(s.event1.GetName(), &s.handler1))
+	assert.True(s.T(), s.eventDispatcher.Has(s.event1.GetName(), &s.handler2))
+}
